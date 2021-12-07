@@ -1,22 +1,28 @@
 module Puzzle2 where
 
-import Puzzle1 (PositionChange, parse)
+import Puzzle1 (MoveCommand (Down, Forward, Up), parseInput)
 
-solve2 :: [PositionChange] -> Int
-solve2 positionChanges =
-  uncurry (*) $ foldl addPostionChangeWithAim (0, 0) changesWithAimValues
+solve2 :: [MoveCommand] -> Int
+solve2 moveCommands = horizontalPosition * depth
   where
-    changesWithAimValues = zip positionChanges (aims positionChanges)
+    (horizontalPosition, depth) =
+      foldl
+        applyMoveCommandWithAim
+        (0, 0)
+        moveCommandsWithAimValues
+    moveCommandsWithAimValues =
+      zip moveCommands (aimValues moveCommands)
 
-addPostionChangeWithAim (x1, y1) (positionChange, aim) = case positionChange of
-  (0, _) -> (x1, y1)
-  (x2, 0) -> (x1 + x2, y1 + (x2 * aim))
+applyMoveCommandWithAim (x1, y1) (positionChange, aim) = case positionChange of
+  Forward x -> (x1 + x, y1 + (x * aim))
+  _ -> (x1, y1)
 
-aims :: [PositionChange] -> [Int]
-aims = scanl1 (+) . map aimChange
+aimValues :: [MoveCommand] -> [Int]
+aimValues = scanl1 (+) . map aimChange
   where
-    aimChange :: PositionChange -> Int
-    aimChange (0, y) = y
+    aimChange :: MoveCommand -> Int
+    aimChange (Down y) = y
+    aimChange (Up y) = - y
     aimChange _ = 0
 
-main = interact $ show . solve2 . parse
+main = interact $ show . solve2 . parseInput

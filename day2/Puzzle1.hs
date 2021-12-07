@@ -2,25 +2,31 @@ module Puzzle1 where
 
 type Position = (Int, Int)
 
-type PositionChange = Position
+data MoveCommand = Forward Int | Up Int | Down Int
 
-parseCommand :: String -> PositionChange
-parseCommand s = case command of
-  ("forward", x) -> (x, 0)
-  ("down", x) -> (0, x)
-  ("up", x) -> (0, - x)
+solve1 :: [MoveCommand] -> Int
+solve1 moveCommands = horizontalPosition * depth
+  where
+    (horizontalPosition, depth) = applyMoveCommands (0, 0) moveCommands
+
+applyMoveCommands :: Position -> [MoveCommand] -> Position
+applyMoveCommands = foldl applyMoveCommand
+
+applyMoveCommand :: Position -> MoveCommand -> Position
+applyMoveCommand (x1, y1) change = case change of
+  Forward x -> (x1 + x, y1)
+  Down y -> (x1, y1 + y)
+  Up y -> (x1, y1 - y)
+
+parseMoveCommand :: String -> MoveCommand
+parseMoveCommand s = case command of
+  ("forward", x) -> Forward x
+  ("down", x) -> Down x
+  ("up", x) -> Up x
   where
     command = case words s of
       [direction, x] -> (direction, read x)
 
-parse = map parseCommand . lines
+parseInput = map parseMoveCommand . lines
 
-solve1 :: [PositionChange] -> Int
-solve1 = uncurry (*) . finalPosition (0, 0)
-
-finalPosition :: Position -> [PositionChange] -> Position
-finalPosition = foldl addPostions
-
-addPostions (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
-
-main = interact $ show . solve1 . parse
+main = interact $ show . solve1 . parseInput
