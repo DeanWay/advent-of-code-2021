@@ -18,3 +18,5 @@ aims = scanl1 (+) . map aimChange
     aimChange :: PositionChange -> Int
     aimChange (0, y) = y
     aimChange _ = 0
+
+main = interact $ show . solve2 . parse

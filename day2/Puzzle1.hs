@@ -22,3 +22,5 @@ finalPosition :: Position -> [PositionChange] -> Position
 finalPosition = foldl addPostions
 
 addPostions (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+
+main = interact $ show . solve1 . parse
