@@ -33,13 +33,10 @@ drawLines lines = do
 
 getLineIndices ((x1, y1), (x2, y2)) = zip xs ys
   where
-    oneDimension a b = 
-      if a == b then
-        repeat a
-      else if a < b then
-        [a .. b] 
-      else
-        reverse [b .. a]
+    oneDimension a b
+      | a == b = repeat a
+      | a < b = [a .. b]
+      | a > b = reverse [b .. a]
     xs = oneDimension x1 x2
     ys = oneDimension y1 y2
 
