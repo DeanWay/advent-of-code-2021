@@ -31,13 +31,17 @@ drawLines lines = do
       writeArray grid i (val + 1)
   return grid
 
-getLineIndices ((x1, y1), (x2, y2))
-  | x1 == x2 = map (\y -> (x1, y)) ys
-  | y1 == y2 = map (\x -> (x, y1)) xs
-  | otherwise = zip xs ys
+getLineIndices ((x1, y1), (x2, y2)) = zip xs ys
   where
-    ys = if y1 < y2 then [y1 .. y2] else reverse [y2 .. y1]
-    xs = if x1 < x2 then [x1 .. x2] else reverse [x2 .. x1]
+    oneDimension a b = 
+      if a == b then
+        repeat a
+      else if a < b then
+        [a .. b] 
+      else
+        reverse [b .. a]
+    xs = oneDimension x1 x2
+    ys = oneDimension y1 y2
 
 calcGridWidth :: [Line] -> Int
 calcGridWidth = maximum . (map (fst . fst) <++> map (fst . snd))
